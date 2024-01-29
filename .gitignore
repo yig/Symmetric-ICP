@@ -1,3 +1,7 @@
 .DS_Store
 .Rhistory
 .idea/
+
+/build
+/dist
+/*.egg-info

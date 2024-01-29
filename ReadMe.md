@@ -49,3 +49,14 @@ Furthermore, in practice, the method with symmetric objective is more reliable i
 ### Point-to-Plane on bunny
 ![Symmetic objective on bunny](images/demos/bun-demo-sym.gif)
 ### Symmetic objective on bunny
+
+---
+
+### From Python
+
+1. Clone this repository with `--recurse-submodules`, as in `git clone --recurse-submodules git@github.com:yig/Symmetric-ICP.git`.
+2. Install [pybind11](https://github.com/pybind/pybind11): `pip install pybind11`.
+3. Run `python3 setup.py install`.
+4. Test with `python3 symicp/test.py`
+
+Currently only `icp_single_iteration()` is exposed. Other functions can be easily exposed by editing `symicp.cpp` and re-installing.

@@ -10,21 +10,20 @@
 
 
 void icp_single_iteration(
-        const Eigen::MatrixXd &VP,
-        const Eigen::MatrixXi &FP,
+        const Eigen::MatrixXd &Pin,
+        const Eigen::MatrixXd &NPin,
         const Eigen::MatrixXd &VQ,
         const Eigen::MatrixXi &FQ,
-        const int num_samples,
         const bool is_robust,
         const ICPMethod method,
         Eigen::Matrix3d &R,
         Eigen::RowVector3d &t) {
 
-    Eigen::MatrixXd P, NP;
+    Eigen::MatrixXd P = Pin;
+    Eigen::MatrixXd NP = NPin;
     Eigen::MatrixXd Q, NQ;
     Eigen::VectorXd D;
 
-    random_points_on_mesh(num_samples, VP, FP, P, NP); // select random points
     point_mesh_distance(P, VQ, FQ, D, Q, NQ); // find closest points
 
     // outlier rejection
@@ -35,7 +34,7 @@ void icp_single_iteration(
         double median;
         igl::median(D, median);
         double std_estimation = 1.4826 * median;
-        for (int i = 0; i < num_samples; ++i) {
+        for (int i = 0; i < P.rows(); ++i) {
             if ((NP.row(i).dot(NQ.row(i)) >= 0) and (D(i) <= 2.5 * std_estimation)) {
                 robust_rows.push_back(i);
             }
@@ -54,11 +53,11 @@ void icp_single_iteration(
     }
 
     // method selection
-    if (method == ICP_METHOD_POINT_TO_POINT) {
+    if (method == ICPMethod::ICP_METHOD_POINT_TO_POINT) {
         point_to_point_rigid_matching(P, Q, R, t); // point-to-point
-    } else if (method == ICP_METHOD_POINT_TO_PLANE) {
+    } else if (method == ICPMethod::ICP_METHOD_POINT_TO_PLANE) {
         point_to_plane_rigid_matching(P, Q, NQ, R, t); //point-to-plane
-    } else if (method == ICP_METHOD_SYMMETRIC) { // symmetric
+    } else if (method == ICPMethod::ICP_METHOD_SYMMETRIC) { // symmetric
         symmetric_rigid_matching(P, Q, NP, NQ, R, t);
     }
 }
